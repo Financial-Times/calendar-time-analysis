@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <style>
+    
+      body {
+        font-family: helvetica, sans-serif;
+        padding: 2em;
+      }
+      
+      tr.flag-true {
+        background-color: #c8e8c8
+      }
+      
+      .cell-date {
+        padding: 20px 0 0;
+        display: block;
+        font-size: larger;
+      }
+      
+      li {
+        line-height: 1.8em;
+      }
+      
+      .freetime {
+        display: inline-block;
+        width: 20px;
+        line-height: 20px;
+        text-align: center;
+        color: white;
+        font-weight: bold;
+      }
+      
+      .free--true {
+        background-color: #CC0000;
+      }
+      
+      .free--false {
+        background-color: #00994D;      
+      }
+      
+    </style>
+    <link rel="stylesheet" href="//www.ft.com/__origami/service/build/v2/bundles/css?modules=o-table%407.3.0%3A%2Fdemos%2Fsrc%2Fdemo.scss%2Co-fonts%40%5E3.0.0%2Co-normalise%40%5E1.0.0%2Co-typography%40%5E5.7.8%2Co-forms%40%5E6.0.1%2Co-buttons%40%5E5.16.2&amp;brand=master">
+  </head>
+  <body>
+  <h1><?= user ?></h1>
+  <p>
+  <?= days ?> days of your calendar. Attempt to pick out actual meetings you attended to provide some analysis.
+  </p>
+  <p>
+    Experimental. Feedback to <a href="mailto:matt.chadburn@ft.com">matt.chadburn@ft.com</a>.
+  </p>
+  <p>
+    This application needs permission to read you calendar - you can <a href="https://myaccount.google.com/permissions">revoke permssion on your Google account</a>.
+  </p>
+  <h2>Stats</h2>
+    <ul>
+      <li>You attended <?= data.attended ?> meetings over the last <?= days ?> days.</li>
+      <li>You spent about <?= data.hoursInMeetings ?> hours in meetings, that's <?= data.percentTimeInMeetings ?> of your time.</li>
+      <li>The meetings you were in cost the FT £<?= data.costTotal.toLocaleString() ?> in attendees time (assuming 100% attendence rate!), that's <?= data.costInSubs ?> standard FT.com subscriptions.</li>
+      <li><?= data.morningMeetings.length ?> of your meetings happen before 1pm, the <a href="https://evernote.com/blog/the-most-and-least-productive-hours-in-a-day/">morning is productive time</a>. Try to move
+        meetings to after lunch, but please do be considerate of your colleagues in different time zones.</li>
+      <li>You created <?= data.ownerMeetings.length ?> meetings (<?= data.ownerMeetingsDuration ?> minutes, <?= data.ownerMeetingsPeople ?> guests, £<?= data.ownerMeetingsCost ?>) - consider your impact on your colleagues time.</li>
+    </ul>
+  </p>
+  <h2>Meetings</h2>
+  <table class="o-table o-table--horizontal-lines o-table--compact" data-o-component="o-table">
+    <thead>
+      <tr>
+        <th scope="col" role="columnheader">title</th>
+        <th scope="col" role="columnheader" data-o-table-data-type="numeric" class="o-table__cell--numeric">attendees</th>
+        <th scope="col" role="columnheader" data-o-table-data-type="numeric" class="o-table__cell--numeric">duration</th>
+        <th scope="col" role="columnheader" data-o-table-data-type="numeric" class="o-table__cell--numeric">cost</th>
+        <th scope="col" role="columnheader">start</th>
+        <th scope="col" role="columnheader">owner</th>
+        <th scope="col" role="columnheader">status</th>
+        <th scope="col" role="columnheader">reoccurs?</th>
+      </tr>
+    </thead>
+    <tbody>
+      <? for (var i = 0; i < events.length; i++) { ?>
+        <? for (var j = 0; j < events[i].values.length; j++) { ?>
+          <? if (j === 0) { ?>
+            <tr>
+              <td colspan="11">
+                <span class="cell-date"><?= events[i].daily.dayOfWeek ?>, <?= events[i].key ?></span>
+                <p>
+                  You had <?= events[i].daily.attended ?> meetings today, around <?= events[i].daily.minutes ?> hours.
+                </p>
+                  <p>
+                   <? for (var k = 9; k < 18; k++) { ?>
+                      <span class="freetime free--<?= (events[i].daily.freeTime.indexOf(k) >= 0) ?>"><?= k ?></span> 
+                    <? } ?>
+                    Consceutive blocks of free time help you be more productive.
+                  </p>
+              </td>
+            </tr>
+          <? } ?>
+            <tr class="flag-<?= events[i].values[j].isMeeting ?>">
+              <td><?= events[i].values[j].title ?></td>
+              <td class="o-table__cell--numeric"><?= events[i].values[j].attendees ?></td>
+              <td class="o-table__cell--numeric"><?= events[i].values[j].duration ?></td>
+              <td class="o-table__cell--numeric">£<?= events[i].values[j].cost ?> (<?= events[i].values[j].subs ?> <abbr title="# of standard subscriptions @ £248 p/annum">subs</abbr>)</td>
+              <td><?= events[i].values[j].startTimeTwelveHour ?></td>
+              <td><?= events[i].values[j].owner ?></td>
+              <td><?= events[i].values[j].attending ?></td>
+              <td><?= events[i].values[j].recurs ?></td>
+            </tr>
+        <? } ?>
+      <? } ?>
+      </tbody>
+   </table>
+      
+  </body>
+</html>
